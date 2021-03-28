@@ -6,92 +6,67 @@ import { COLORS } from '../../constants'
 import Icon from '../Icon'
 import VisuallyHidden from '../VisuallyHidden'
 
-const SIZES = {
-  small: {
-    '--font-size': 14 / 16 + 'rem',
-    '--border-line': `1px solid ${COLORS.black}`,
-    '--padding': '4px 4px 4px 24px',
-  },
-  large: {
-    '--font-size': 18 / 16 + 'rem',
-    '--border-line': `2px solid ${COLORS.black}`,
-    '--padding': '8px 8px 8px 36px',
-  },
-}
-
-const ICON_SIZES = {
-  small: {
-    size: 16,
-    strokeWidth: 1,
-  },
-  large: {
-    size: 24,
-    strokeWidth: 2,
-  },
-}
-
-const IconInput = ({ label, icon, width = 250, size, placeholder }) => {
-  const style = {
-    '--width': width + 'px',
-    ...SIZES[size],
-  }
-  const iconSize = ICON_SIZES[size]
+const IconInput = ({ label, icon, width = 250, size, ...delegated }) => {
+  const [iconSize, iconThickness] = size === 'small' ? [16, 1] : [24, 2]
+  const InputComponent = size === 'small' ? SmallInput : LargeInput
 
   return (
-    <Wrapper style={style}>
-      <IconWrapper
-        id={icon}
-        size={iconSize.size}
-        strokeWidth={iconSize.strokeWidth}
-      />
-      <label>
-        <VisuallyHidden>{label}</VisuallyHidden>
-      </label>
-      <InputText type="text" placeholder={placeholder} />
+    <Wrapper>
+      <VisuallyHidden>{label}</VisuallyHidden>
+      <IconWrapper style={{ '--size': iconSize + 'px' }}>
+        <Icon id={icon} size={iconSize} strokeWidth={iconThickness} />
+      </IconWrapper>
+      <InputComponent style={{ '--width': width + 'px' }} {...delegated} />
     </Wrapper>
   )
 }
 
-const Wrapper = styled.form`
-  width: var(--width);
+const Wrapper = styled.div`
   position: relative;
-  border-radius: 2px;
-
-  --input-text-color: ${COLORS.gray700};
+  display: block;
+  color: ${COLORS.gray700};
 
   &:hover {
-    --input-text-color: ${COLORS.black};
+    color: ${COLORS.black};
   }
 `
 
-const IconWrapper = styled(Icon)`
+const IconWrapper = styled.div`
   position: absolute;
   top: 0;
   bottom: 0;
-  margin-top: auto;
-  margin-bottom: auto;
-  left: 0;
-  color: var(--input-text-color);
+  margin: auto 0;
+  width: var(--size);
+  height: var(--size);
 `
 
 const InputText = styled.input`
-  width: 100%;
-  font-size: var(--font-size);
-  border: none;
-  border-bottom: var(--border-line);
-  padding: var(--padding);
+  width: var(--width);
+  color: inherit;
   font-weight: 700;
-  color: var(--input-text-color);
+  border: none;
+  border-bottom-style: solid;
+  border-bottom-color: ${COLORS.black};
+  outline-offset: 2px;
 
   &::placeholder {
-    color: ${COLORS.gray500};
     font-weight: 400;
+    color: ${COLORS.gray500};
   }
+`
 
-  &:focus {
-    outline-offset: 2px;
-    outline-width: 2px;
-  }
+const SmallInput = styled(InputText)`
+  height: 24px;
+  padding-left: 24px;
+  font-size: ${14 / 16}rem;
+  border-bottom-width: 1px;
+`
+
+const LargeInput = styled(InputText)`
+  height: 36px;
+  padding-left: 36px;
+  font-size: ${18 / 16}rem;
+  border-bottom-width: 2px;
 `
 
 export default IconInput
